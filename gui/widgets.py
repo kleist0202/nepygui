@@ -112,7 +112,7 @@ class Frame(Widget):
         self.grad_surface = Gradient(begin_color, end_color, self.w, self.h)
         self.temp_grad_surface = self.grad_surface
 
-    def draw(self, display, mouse_pos, mouse_button=0, keys=0, delta_time=0):
+    def draw(self, display, mouse_pos, mouse_button=0, keys=0, delta_time=0, event_list=[]):
         if self.is_gradient:
             Special_Functions.border_rect(display, self.grad_surface.get_surface(),
                                           self.border_color, self.x, self.y, self.w, self.h, self.is_border, self.border_thickness)
@@ -362,7 +362,7 @@ class Button(AbstractButton, TextFrame):
         self.is_gradient = kwargs.get("gradient", True)
         self.is_border = kwargs.get("border", True)
 
-    def draw(self, display, mouse_pos, mouse_key, keys=0, delta_time=0):
+    def draw(self, display, mouse_pos, mouse_key, keys=0, delta_time=0, event_list=[]):
         TextFrame.draw(self, display, mouse_pos)
         if(super().is_clicked(mouse_pos, mouse_key)):
             self.fill_surface = self.color_surface_pressed
@@ -371,15 +371,10 @@ class Button(AbstractButton, TextFrame):
 
 class AbstractEntry(Widget):
     """Class which provides functionality of writing text"""
-    signs = [None, None, None, None, "a", "b", "c", "d", "e", "f",
-             "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q",
-             "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2",
-             "3", "4", "5", "6", "7", "8", "9", "0", None, None, None,
-             None, " ", None, None, None, None, None, None, None, None,
-             None, None, "."]
-    delay = 0
+
+    press_delay = 0.2
     blit_delay = 0.5
-    backspace_value = 42
+    banned_keys = [pygame.K_BACKSPACE, pygame.K_ESCAPE]
 
     def __init__(self, class_name="AbstractEntry", **kwargs):
         super().__init__(**kwargs)
@@ -387,39 +382,66 @@ class AbstractEntry(Widget):
         self.dyn_text = Dynamic_Text(x=self.x, y=self.y, h=self.h)
         self.name = []
         self.marker_x = 0
+
         # set marker step for entry
         self.marker_step = self.dyn_text.get_letter_size()/2
-        self.current_step = 0
 
-    def writing(self, display, keys, delta_time):
-        i = 0
+        self.current_step = 0
+        self.current_key = None
+        self.current_blit_time = AbstractEntry.blit_delay
+        self.current_press_time = 0
+
+    def writing(self, display, keys, delta_time, event_list):
         self.marker_x = self.x + self.w / 2 + self.current_step
         self.blitting_line(display, delta_time)
 
-        if AbstractEntry.delay >= 0.2:
-            AbstractEntry.delay = 0
-            for key in keys:
-                if key and i == AbstractEntry.backspace_value and self.name:
+        for event in event_list:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE and self.name:
+                    self.current_key = event
                     self.name.pop()
                     self.current_step -= self.marker_step
-                elif key and ((i >= 4 and i < 40) or i == 44 or i == 55):
-                    # when there are too many letters don't allow to write
-                    if self.marker_x + self.marker_step >= self.x + self.w:
-                        return
+                    self.current_press_time = 0
+                    self.current_blit_time = AbstractEntry.blit_delay
+                else:
+                    if event.key not in AbstractEntry.banned_keys:
+                        if self.marker_x + self.marker_step >= self.x + self.w:
+                            return
 
-                    self.name.append(AbstractEntry.signs[i])
-                    self.current_step += self.marker_step
-                    break
-                i += 1
-        AbstractEntry.delay += 1 * delta_time
+                        self.current_key = event
+                        self.name.append(event.unicode)
+                        self.current_step += self.marker_step
+                        self.current_press_time = 0
+                        self.current_blit_time = AbstractEntry.blit_delay
+
+        if self.current_press_time >= AbstractEntry.press_delay:
+            self.current_press_time = 0
+            if self.current_key is not None:
+                if self.current_key.key not in AbstractEntry.banned_keys:
+                    if keys[self.current_key.key]:
+                        if self.marker_x + self.marker_step >= self.x + self.w:
+                            return
+                        self.name.append(self.current_key.unicode)
+                        self.current_step += self.marker_step
+                        self.current_blit_time = AbstractEntry.blit_delay
+                else:
+                    if keys[self.current_key.key] and self.name:
+                        if self.marker_x + self.marker_step >= self.x + self.w:
+                            return
+                        self.name.pop()
+                        self.current_step -= self.marker_step
+                        self.current_blit_time = AbstractEntry.blit_delay
+
+
+        self.current_press_time += 1 * delta_time
 
     def blitting_line(self, display, delta_time):
-        if AbstractEntry.blit_delay > 0.5:
+        if self.current_blit_time > AbstractEntry.blit_delay:
             pygame.draw.line(display, Colors.Black, (self.marker_x,
                              self.y + 8), (self.marker_x, self.y + self.h - 8))
-            if AbstractEntry.blit_delay > 1:
-                AbstractEntry.blit_delay = 0
-        AbstractEntry.blit_delay += 1 * delta_time
+            if self.current_blit_time > AbstractEntry.blit_delay * 2:
+                self.current_blit_time = 0
+        self.current_blit_time += 1 * delta_time
 
     def clear_entry_value(self):
         self.entry_value = ""
@@ -477,12 +499,12 @@ class EntryWidget(AbstractEntry, AbstractButton, Frame):
         # entrywidget as 'abstractbutton', needs function: here, activate entry
         self.function = self.activate
 
-    def draw(self, display, mouse_pos, mouse_key, keys, delta_time):
+    def draw(self, display, mouse_pos, mouse_key, keys, delta_time, event_list):
         AbstractButton.is_clicked(self, mouse_pos, mouse_key)
         Frame.draw(self, display, mouse_pos)
         if self.is_active:
             self.border_color = self.active_border_color
-            AbstractEntry.writing(self, display, keys, delta_time)
+            AbstractEntry.writing(self, display, keys, delta_time, event_list)
         else:
             self.border_color = self.prev_active_border_color
         self.entry_value = "".join(self.name)
@@ -497,7 +519,7 @@ class EntryWidget(AbstractEntry, AbstractButton, Frame):
         self.is_active = True
 
     def deactivate(self):
-        AbstractEntry.blit_delay = 0.5
+        self.current_blit_time = AbstractEntry.blit_delay 
         self.is_active = False
 
     def recreate(self, **kwargs):

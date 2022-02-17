@@ -51,7 +51,8 @@ class Window:
         self.screen = pygame.display.set_mode(self.window_size, self.options)
 
         while self.running:
-            self.events()
+            event_list = pygame.event.get()
+            self.global_events(event_list)
             self.screen.fill(self.screen_color)
 
             # ------------ scene ------------- #
@@ -62,7 +63,7 @@ class Window:
             keys = pygame.key.get_pressed()
 
             for widget in self.widgets:
-                widget.draw(self.screen, mouse_pos, mouse_button, keys, self.delta_time)
+                widget.draw(self.screen, mouse_pos, mouse_button, keys, self.delta_time, event_list)
 
             # fps management
             self.fps.fps()
@@ -81,8 +82,8 @@ class Window:
 
         self.kill()
 
-    def events(self) -> None:
-        for event in pygame.event.get():
+    def global_events(self, event_list) -> None:
+        for event in event_list:
             if event.type == pygame.QUIT:
                 self.running = False
             elif event.type == pygame.KEYDOWN:

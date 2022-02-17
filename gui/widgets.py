@@ -40,9 +40,10 @@ class Widget(ABC):
     def get_size(self):
         return (self.w, self.h)
 
-    def check_options(self, kwargs):
+    @classmethod
+    def check_options(cls, kwargs):
         for current_option in kwargs:
-            if current_option not in self.allowed_kwargs:
+            if current_option not in cls.allowed_kwargs:
                 raise KeyArgumentNotFound(current_option)
 
     @abstractmethod
@@ -52,6 +53,11 @@ class Widget(ABC):
 
 class Frame(Widget):
     """ Basic object which can be drawn on screen"""
+
+    allowed_kwargs = ["x", "y", "w", "h",
+                        "fill", "border", "bordercolor", "hover",
+                        "hovercolor", "gradient", "borderthickness"]
+
 
     def __init__(self, class_name="Frame", **kwargs):
         """
@@ -68,10 +74,6 @@ class Frame(Widget):
             **gradient (bool): draw gradient or not
             **border_thickness (int): size of border
         """
-
-        self.allowed_kwargs = ["x", "y", "w", "h",
-                                "fill", "border", "bordercolor", "hover",
-                                "hovercolor", "gradient", "borderthickness"]
 
         if class_name == __class__.__name__:
             self.check_options(kwargs)
@@ -135,6 +137,9 @@ class Frame(Widget):
 class Label(Widget):
     """Creates label where you can display some text"""
 
+    allowed_kwargs = ["x", "y", "w", "h",
+                        "text", "anchor", "fontcolor", "fontsize", "bold"]
+
     def __init__(self, class_name="Label", **kwargs):
         """
         Kwargs:
@@ -148,10 +153,6 @@ class Label(Widget):
             **fontsize (int): set size of font
             **bold (bool): set text bold or not
         """
-
-        self.allowed_kwargs = ["x", "y", "w", "h",
-                                "text", "anchor", "fontcolor", "fontsize",
-                                "bold"]
 
         if class_name == __class__.__name__:
             self.check_options(kwargs)
@@ -240,6 +241,12 @@ class Label(Widget):
 class TextFrame(Frame, Label):
     """Creates frame with text to display"""
 
+    allowed_kwargs = ["x", "y", "w", "h", "fill", "border", "bordercolor",
+                            "hover", "hovercolor", "gradient", "text", "align",
+                            "borderthickness", "anchor", "fontcolor", "fontsize",
+                            "bold"]
+
+
     def __init__(self, class_name="TextFrame", **kwargs):
         """
         Kwargs:
@@ -261,11 +268,6 @@ class TextFrame(Frame, Label):
             **fontsize (int): set size of font
             **bold (bool): set text bold or not
         """
-
-        self.allowed_kwargs = ["x", "y", "w", "h", "fill", "border", "bordercolor",
-                                "hover", "hovercolor", "gradient", "text", "align",
-                                "borderthickness", "anchor", "fontcolor", "fontsize",
-                                "bold"]
 
         if class_name == __class__.__name__:
             self.check_options(kwargs)
@@ -316,6 +318,12 @@ class AbstractButton(Widget):
 class Button(AbstractButton, TextFrame):
     """Class which allows you to draw fully functional button"""
 
+    allowed_kwargs = ["x", "y", "w", "h", "fill", "border", "bordercolor",
+                            "hover", "hovercolor", "pressedcolor", "gradient",
+                            "text", "align", "borderthickness", "anchor", "fontcolor",
+                            "fontsize", "bold", "func"]
+
+
     def __init__(self, class_name="Button", **kwargs):
         """
         Kwargs:
@@ -339,11 +347,6 @@ class Button(AbstractButton, TextFrame):
             **bold (bool): set text bold or not
             **func (function): function which will be executed when the button is pressed
         """
-
-        self.allowed_kwargs = ["x", "y", "w", "h", "fill", "border", "bordercolor",
-                                "hover", "hovercolor", "pressedcolor", "gradient",
-                                "text", "align", "borderthickness", "anchor", "fontcolor",
-                                "fontsize", "bold", "func"]
 
         if class_name == __class__.__name__:
             self.check_options(kwargs)
@@ -437,6 +440,10 @@ class AbstractEntry(Widget):
 class EntryWidget(AbstractEntry, AbstractButton, Frame):
     """Creates entry which allows you to write some text"""
 
+    allowed_kwargs = ["x", "y", "w", "h", "fill", "border", "bordercolor",
+                            "hover", "hovercolor", "gradient", "borderthickness",
+                            "activebordercolor"]
+
     def __init__(self, class_name="EntryWidget", **kwargs):
         """
         Kwargs:
@@ -454,10 +461,6 @@ class EntryWidget(AbstractEntry, AbstractButton, Frame):
             **activebordercolor (tuple): border color which appear when entry is active 
         """
 
-        self.allowed_kwargs = ["x", "y", "w", "h", "fill", "border", "bordercolor",
-                                "hover", "hovercolor", "gradient", "borderthickness",
-                                "activebordercolor"]
-        
         if class_name == __class__.__name__:
             self.check_options(kwargs)
 

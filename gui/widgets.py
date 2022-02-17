@@ -1,5 +1,5 @@
 import pygame
-from text import Static_Text, Dynamic_Text
+from .text import Static_Text, Dynamic_Text
 from .colors import Colors
 from abc import ABC, abstractmethod
 
@@ -10,10 +10,12 @@ class KeyArgumentNotFound(Exception):
 class Widget(ABC):
     """ Base class of all GUI objects """
 
-    def __init__(self, **kwargs):
-        # positions and dimensions
+    def __init__(self, class_name="Widget", **kwargs):
 
-        self.check_options(kwargs)
+        if class_name == __class__.__name__:
+            self.check_options(kwargs)
+
+        # positions and dimensions
 
         self.x = kwargs.get("x", 0)
         self.y = kwargs.get("y", 0)
@@ -39,7 +41,6 @@ class Widget(ABC):
         return (self.w, self.h)
 
     def check_options(self, kwargs):
-        print(self.allowed_kwargs)
         for current_option in kwargs:
             if current_option not in self.allowed_kwargs:
                 raise KeyArgumentNotFound(current_option)
@@ -52,7 +53,7 @@ class Widget(ABC):
 class Frame(Widget):
     """ Basic object which can be drawn on screen"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, class_name="Frame", **kwargs):
         """
         Kwargs:
             **x (int): x position
@@ -71,7 +72,13 @@ class Frame(Widget):
         self.allowed_kwargs = ["x", "y", "w", "h",
                                 "fill", "border", "bordercolor", "hover",
                                 "hovercolor", "gradient", "borderthickness"]
-        super().__init__(**kwargs)
+
+        if class_name == __class__.__name__:
+            self.check_options(kwargs)
+
+        super().__init__("Frame", **kwargs)
+
+        # new settings
         self.fill_color = kwargs.get("fill", Colors.White)
         self.is_border = kwargs.get("border", False)
         self.border_color = kwargs.get("bordercolor", Colors.Gray)
@@ -128,7 +135,7 @@ class Frame(Widget):
 class Label(Widget):
     """Creates label where you can display some text"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, class_name="Label", **kwargs):
         """
         Kwargs:
             **x (int): x position
@@ -145,7 +152,11 @@ class Label(Widget):
         self.allowed_kwargs = ["x", "y", "w", "h",
                                 "text", "anchor", "fontcolor", "fontsize",
                                 "bold"]
-        super().__init__(**kwargs)
+
+        if class_name == __class__.__name__:
+            self.check_options(kwargs)
+
+        super().__init__("Label", **kwargs)
 
         # new settings
         self.text = kwargs.get("text", "")
@@ -229,7 +240,7 @@ class Label(Widget):
 class TextFrame(Frame, Label):
     """Creates frame with text to display"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, class_name="TextFrame", **kwargs):
         """
         Kwargs:
             **x (int): x position
@@ -244,17 +255,27 @@ class TextFrame(Frame, Label):
             **gradient (bool): draw gradient or not
             **text (str): text to display
             **align (str): align text ("left", "center", "right")
+            **border_thickness (int): size of border
+            **anchor (str): set relative text position
             **fontcolor (tuple): changes font color
+            **fontsize (int): set size of font
+            **bold (bool): set text bold or not
         """
 
-        self.allowed_kwargs = ["x", "y", "w", "h",
-                                "fill", "border", "bordercolor", "hover",
-                                "hovercolor", "gradient", "borderthickness",
-                                "text", "align", "fontcolor"]
-        super().__init__(**kwargs)
+        self.allowed_kwargs = ["x", "y", "w", "h", "fill", "border", "bordercolor",
+                                "hover", "hovercolor", "gradient", "text", "align",
+                                "borderthickness", "anchor", "fontcolor", "fontsize",
+                                "bold"]
+
+        if class_name == __class__.__name__:
+            self.check_options(kwargs)
+
+        super().__init__("TextFrame", **kwargs)
+
         if self.w < self.text_object.get_text_width():
             self.w = self.text_object.get_text_width()
             Frame.recreate(self, w=self.w, h=self.h)
+
         Label.set_padding(self, Label.get_padding(self)
                           + self.border_thickness/2)
 
@@ -266,8 +287,8 @@ class TextFrame(Frame, Label):
 class AbstractButton(Widget):
     """ Class which provides functionality common to buttons """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, class_name="AbstractButton", **kwargs):
+        super().__init__("AbstractButton", **kwargs)
         self.pressed = False
         self.function = kwargs.get("func", None)
 
@@ -295,7 +316,7 @@ class AbstractButton(Widget):
 class Button(AbstractButton, TextFrame):
     """Class which allows you to draw fully functional button"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, class_name="Button", **kwargs):
         """
         Kwargs:
             **x (int): x position
@@ -310,14 +331,24 @@ class Button(AbstractButton, TextFrame):
             **pressedcolor (tuple): color which appear when button is pressed
             **gradient (bool): draw gradient or not
             **text (str): text to display
+            **align (str): align text ("left", "center", "right")
+            **border_thickness (int): size of border
+            **anchor (str): set relative text position
+            **fontcolor (tuple): changes font color
+            **fontsize (int): set size of font
+            **bold (bool): set text bold or not
             **func (function): function which will be executed when the button is pressed
         """
 
-        self.allowed_kwargs = ["x", "y", "w", "h",
-                                "fill", "border", "bordercolor", "hover",
-                                "hovercolor", "gradient", "borderthickness",
-                                "pressedcolor", "text", "func"]
-        super().__init__(**kwargs)
+        self.allowed_kwargs = ["x", "y", "w", "h", "fill", "border", "bordercolor",
+                                "hover", "hovercolor", "pressedcolor", "gradient",
+                                "text", "align", "borderthickness", "anchor", "fontcolor",
+                                "fontsize", "bold", "func"]
+
+        if class_name == __class__.__name__:
+            self.check_options(kwargs)
+
+        super().__init__("Button", **kwargs)
 
         # new settings
         self.color_pressed = kwargs.get("pressedcolor", Colors.LightGray)
@@ -347,7 +378,7 @@ class AbstractEntry(Widget):
     blit_delay = 0.5
     backspace_value = 42
 
-    def __init__(self, **kwargs):
+    def __init__(self, class_name="AbstractEntry", **kwargs):
         super().__init__(**kwargs)
         self.entry_value = ""
         self.dyn_text = Dynamic_Text(x=self.x, y=self.y, h=self.h)
@@ -361,7 +392,8 @@ class AbstractEntry(Widget):
         i = 0
         self.marker_x = self.x + self.w / 2 + self.current_step
         self.blitting_line(display, delta_time)
-        if AbstractEntry.delay > 7 * delta_time:
+
+        if AbstractEntry.delay >= 0.2:
             AbstractEntry.delay = 0
             for key in keys:
                 if key and i == AbstractEntry.backspace_value and self.name:
@@ -381,7 +413,7 @@ class AbstractEntry(Widget):
     def blitting_line(self, display, delta_time):
         if AbstractEntry.blit_delay > 0.5:
             pygame.draw.line(display, Colors.Black, (self.marker_x,
-                             self.y + 4), (self.marker_x, self.y + self.h - 4))
+                             self.y + 8), (self.marker_x, self.y + self.h - 8))
             if AbstractEntry.blit_delay > 1:
                 AbstractEntry.blit_delay = 0
         AbstractEntry.blit_delay += 1 * delta_time
@@ -405,7 +437,7 @@ class AbstractEntry(Widget):
 class EntryWidget(AbstractEntry, AbstractButton, Frame):
     """Creates entry which allows you to write some text"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, class_name="EntryWidget", **kwargs):
         """
         Kwargs:
             **x (int): x position
@@ -418,9 +450,19 @@ class EntryWidget(AbstractEntry, AbstractButton, Frame):
             **hover (bool): change color when hovering over or not
             **hovercolor (tuple): color which appear when mouse is hovering over entry
             **gradient (bool): draw gradient or not
+            **border_thickness (int): size of border
             **activebordercolor (tuple): border color which appear when entry is active 
         """
-        super().__init__(**kwargs)
+
+        self.allowed_kwargs = ["x", "y", "w", "h", "fill", "border", "bordercolor",
+                                "hover", "hovercolor", "gradient", "borderthickness",
+                                "activebordercolor"]
+        
+        if class_name == __class__.__name__:
+            self.check_options(kwargs)
+
+        super().__init__("EntryWidget", **kwargs)
+
         self.is_active = False
         self.prev_active_border_color = self.border_color
 
@@ -452,6 +494,7 @@ class EntryWidget(AbstractEntry, AbstractButton, Frame):
         self.is_active = True
 
     def deactivate(self):
+        AbstractEntry.blit_delay = 0.5
         self.is_active = False
 
     def recreate(self, **kwargs):

@@ -38,7 +38,7 @@ class Dynamic_Text:
     def __init__(self, **kwargs):
         self.x = kwargs.get("x", 0)
         self.y = kwargs.get("y", 0)
-        self.font_size = kwargs.get("h", 20) // 3
+        self.font_size = kwargs.get("h", 20) // 2
         self.color = kwargs.get("font_color", (0, 0, 0))
 
         self.text_font = pygame.font.SysFont(

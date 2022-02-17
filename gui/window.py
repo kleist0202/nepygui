@@ -62,7 +62,7 @@ class Window:
             keys = pygame.key.get_pressed()
 
             for widget in self.widgets:
-                widget.draw(self.screen, mouse_pos, mouse_button)
+                widget.draw(self.screen, mouse_pos, mouse_button, keys, self.delta_time)
 
             # fps management
             self.fps.fps()
@@ -77,7 +77,7 @@ class Window:
             self.delta_time = (current_frame_time -
                                self.last_frame_time) / 1000.0
             self.last_frame_time = current_frame_time
-            # self.clock.tick(60)
+            self.clock.tick(60)
 
         self.kill()
 
@@ -87,8 +87,6 @@ class Window:
                 self.running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    self.running = False
-                elif event.key == pygame.K_q:
                     self.running = False
 
     @staticmethod

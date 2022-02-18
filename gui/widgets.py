@@ -56,7 +56,7 @@ class Frame(Widget):
 
     allowed_kwargs = [
         "x", "y", "w", "h",
-        "fill", "border", "bordercolor", "hover",
+        "fill", "bordercolor", "hover",
         "hovercolor", "gradient", "borderthickness",
         "gradientstart", "gradientend"
     ]
@@ -70,14 +70,13 @@ class Frame(Widget):
             **w (int): width
             **h (int): height
             **fill (tuple): background color of frame
-            **border (bool): draw border or not
             **bordercolor (tuple): color of border, border argument must be True
             **hover (bool): draw when hovering over or not
             **hovercolor (tuple): color which appear when mouse is hovering over frame
             **gradient (bool): draw gradient or not
             **gradientstart (tuple): set gradient start color 
             **gradientend (tuple):  set gradient end color
-            **border_thickness (int): size of border
+            **borderthickness (int): size of border
         """
 
         if class_name == __class__.__name__:
@@ -87,20 +86,18 @@ class Frame(Widget):
 
         # new settings
         self.fill_color = kwargs.get("fill", Colors.White)
-        self.is_border = kwargs.get("border", False)
         self.border_color = kwargs.get("bordercolor", Colors.Gray)
         self.is_hover = kwargs.get("hover", False)
         self.hover_color = kwargs.get("hovercolor", self.fill_color)
         self.is_gradient = kwargs.get("gradient", False)
         self.gradient_start_color = kwargs.get("gradientstart", self.fill_color)
         self.gradient_end_color = kwargs.get("gradientend", map(lambda x: x - 60, self.fill_color))
-        self.border_thickness = kwargs.get("borderthickness", 2)
+        self.border_thickness = kwargs.get("borderthickness", 0)
         self.surf_init()
 
     def recreate(self, **kwargs):
         super().recreate(**kwargs)
         self.fill_color = kwargs.get("fill", self.fill_color)
-        self.is_border = kwargs.get("border", self.is_border)
         self.border_color = kwargs.get("bordercolor", self.border_color)
         self.is_hover = kwargs.get("hover", self.is_hover)
         self.hover_color = kwargs.get("hovercolor", self.hover_color)
@@ -120,10 +117,10 @@ class Frame(Widget):
     def draw(self, display, mouse_pos, mouse_button=0, keys=0, delta_time=0, event_list=[]):
         if self.is_gradient:
             Special_Functions.border_rect(display, self.grad_surface.get_surface(),
-                                          self.border_color, self.x, self.y, self.w, self.h, self.is_border, self.border_thickness)
+                                          self.border_color, self.x, self.y, self.w, self.h, self.border_thickness)
         else:
             Special_Functions.border_rect(display, self.fill_surface.get_surface(),
-                                          self.border_color, self.x, self.y, self.w, self.h, self.is_border, self.border_thickness)
+                                          self.border_color, self.x, self.y, self.w, self.h, self.border_thickness)
         self.is_hovering(mouse_pos)
 
     def is_hovering(self, mouse_pos):
@@ -247,7 +244,7 @@ class TextFrame(Frame, Label):
     """Creates frame with text to display"""
 
     allowed_kwargs = [
-        "x", "y", "w", "h", "fill", "border", "bordercolor",
+        "x", "y", "w", "h", "fill", "bordercolor",
         "hover", "hovercolor", "gradient", "text", "align",
         "borderthickness", "anchor", "fontcolor", "fontsize", "bold"]
 
@@ -260,7 +257,6 @@ class TextFrame(Frame, Label):
             **w (int): width
             **h (int): height
             **fill (tuple): background color of frame
-            **border (bool): draw border or not
             **bordercolor (tuple): color of border, border argument must be True
             **hover (bool): draw when hovering over or not
             **hovercolor (tuple): color which appear when mouse is hovering over frame
@@ -324,7 +320,7 @@ class Button(AbstractButton, TextFrame):
     """Class which allows you to draw fully functional button"""
 
     allowed_kwargs = [
-        "x", "y", "w", "h", "fill", "border", "bordercolor",
+        "x", "y", "w", "h", "fill", "bordercolor",
         "hover", "hovercolor", "pressedcolor", "gradient",
         "text", "align", "borderthickness", "anchor", "fontcolor",
         "fontsize", "bold", "func"]
@@ -338,7 +334,6 @@ class Button(AbstractButton, TextFrame):
             **w (int): width
             **h (int): height
             **fill (tuple): background color of button
-            **border (bool): draw border or not
             **bordercolor (tuple): color of border, border argument must be True
             **hover (bool): change color when hovering over or not
             **hovercolor (tuple): color which appear when mouse is hovering over button
@@ -346,7 +341,7 @@ class Button(AbstractButton, TextFrame):
             **gradient (bool): draw gradient or not
             **text (str): text to display
             **align (str): align text ("left", "center", "right")
-            **border_thickness (int): size of border
+            **borderthickness (int): size of border
             **anchor (str): set relative text position
             **fontcolor (tuple): changes font color
             **fontsize (int): set size of font
@@ -366,7 +361,7 @@ class Button(AbstractButton, TextFrame):
 
         # default settings
         self.is_gradient = kwargs.get("gradient", True)
-        self.is_border = kwargs.get("border", True)
+        self.border_thickness = kwargs.get("borderthickness", 2)
 
     def draw(self, display, mouse_pos, mouse_key, keys=0, delta_time=0, event_list=[]):
         TextFrame.draw(self, display, mouse_pos)
@@ -469,7 +464,7 @@ class EntryWidget(AbstractEntry, AbstractButton, Frame):
     """Creates entry which allows you to write some text"""
 
     allowed_kwargs = [
-        "x", "y", "w", "h", "fill", "border", "bordercolor",
+        "x", "y", "w", "h", "fill", "bordercolor",
         "hover", "hovercolor", "gradient", "borderthickness",
         "activebordercolor"]
 
@@ -481,12 +476,11 @@ class EntryWidget(AbstractEntry, AbstractButton, Frame):
             **w (int): width
             **h (int): height
             **fill (tuple): background color of entry
-            **border (bool): draw border or not
             **bordercolor (tuple): color of border, border argument must be True
             **hover (bool): change color when hovering over or not
             **hovercolor (tuple): color which appear when mouse is hovering over entry
             **gradient (bool): draw gradient or not
-            **border_thickness (int): size of border
+            **borderthickness (int): size of border
             **activebordercolor (tuple): border color which appear when entry is active 
         """
 
@@ -499,9 +493,9 @@ class EntryWidget(AbstractEntry, AbstractButton, Frame):
         self.prev_active_border_color = self.border_color
 
         # default settings
-        self.is_border = kwargs.get("border", True)
         self.active_border_color = kwargs.get(
             "activebordercolor", Colors.SkyBlue)
+        self.border_thickness = kwargs.get("borderthickness", 2)
 
         # entrywidget as 'abstractbutton', needs function: here, activate entry
         self.function = self.activate
@@ -543,18 +537,17 @@ class Special_Functions:
     def __init__(self): pass
 
     @staticmethod
-    def border_rect(display, color_surface, frame_color, x, y, w, h, draw_borders, border_thickness):
+    def border_rect(display, color_surface, frame_color, x, y, w, h, border_thickness):
         """Function which allows you draw rectangle with borders"""
         display.blit(color_surface, (x, y))
-        if draw_borders:
-            pygame.draw.line(display, frame_color, (x, y),
-                             (x + w, y), border_thickness)
-            pygame.draw.line(display, frame_color,
-                             (x, y + h), (x + w, y + h), border_thickness)
-            pygame.draw.line(display, frame_color, (x, y),
-                             (x, y + h), border_thickness)
-            pygame.draw.line(display, frame_color,
-                             (x + w, y), (x + w, y + h), border_thickness)
+        pygame.draw.line(display, frame_color, (x, y),
+                         (x + w, y), border_thickness)
+        pygame.draw.line(display, frame_color,
+                         (x, y + h), (x + w, y + h), border_thickness)
+        pygame.draw.line(display, frame_color, (x, y),
+                         (x, y + h), border_thickness)
+        pygame.draw.line(display, frame_color,
+                         (x + w, y), (x + w, y + h), border_thickness)
 
 
 class ColorSurface:

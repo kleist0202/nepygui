@@ -18,6 +18,7 @@ class Window:
         self.window_size = (800, 600)
 
         self.widgets = []
+        self.srufaces = []
 
         self.clock = pygame.time.Clock()
         self.fps = Fps()
@@ -57,7 +58,7 @@ class Window:
 
             # ------------ scene ------------- #
 
-            # get mouse input
+            # get mouse and keyboard input
             mouse_button = pygame.mouse.get_pressed()
             mouse_pos = pygame.mouse.get_pos()
             keys = pygame.key.get_pressed()
@@ -65,10 +66,12 @@ class Window:
             for widget in self.widgets:
                 widget.draw(self.screen, mouse_pos, mouse_button, keys, self.delta_time, event_list)
 
+            for surface in self.surfaces:
+                self.screen.blit(surface, (0,0))
+
             # fps management
             self.fps.fps()
             self.fps.show_fps(self.screen)
-
 
             # flip screen at the end of scene
             pygame.display.flip()

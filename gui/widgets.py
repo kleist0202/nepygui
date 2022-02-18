@@ -54,9 +54,12 @@ class Widget(ABC):
 class Frame(Widget):
     """ Basic object which can be drawn on screen"""
 
-    allowed_kwargs = ["x", "y", "w", "h",
-                        "fill", "border", "bordercolor", "hover",
-                        "hovercolor", "gradient", "borderthickness"]
+    allowed_kwargs = [
+        "x", "y", "w", "h",
+        "fill", "border", "bordercolor", "hover",
+        "hovercolor", "gradient", "borderthickness",
+        "gradientstart", "gradientend"
+    ]
 
 
     def __init__(self, class_name="Frame", **kwargs):
@@ -72,6 +75,8 @@ class Frame(Widget):
             **hover (bool): draw when hovering over or not
             **hovercolor (tuple): color which appear when mouse is hovering over frame
             **gradient (bool): draw gradient or not
+            **gradientstart (tuple): set gradient start color 
+            **gradientend (tuple):  set gradient end color
             **border_thickness (int): size of border
         """
 
@@ -87,6 +92,8 @@ class Frame(Widget):
         self.is_hover = kwargs.get("hover", False)
         self.hover_color = kwargs.get("hovercolor", self.fill_color)
         self.is_gradient = kwargs.get("gradient", False)
+        self.gradient_start_color = kwargs.get("gradientstart", self.fill_color)
+        self.gradient_end_color = kwargs.get("gradientend", map(lambda x: x - 60, self.fill_color))
         self.border_thickness = kwargs.get("borderthickness", 2)
         self.surf_init()
 
@@ -98,18 +105,16 @@ class Frame(Widget):
         self.is_hover = kwargs.get("hover", self.is_hover)
         self.hover_color = kwargs.get("hovercolor", self.hover_color)
         self.is_gradient = kwargs.get("gradient", self.is_gradient)
-        self.border_thickness = kwargs.get(
-            "borderthickness", self.border_thickness)
+        self.gradient_start_color = kwargs.get("gradientstart", self.gradient_start_color)
+        self.gradient_end_color = kwargs.get("gradientend", self.gradient_end_color)
+        self.border_thickness = kwargs.get("borderthickness", self.border_thickness)
         self.surf_init()
 
     def surf_init(self):
         self.fill_surface = ColorSurface(self.fill_color, self.w, self.h)
         self.hover_surface = ColorSurface(self.hover_color, self.w, self.h)
         self.temp_fill_surface = self.fill_surface
-        begin_color = self.fill_color
-        end_color = (self.fill_color[0]-60,
-                     self.fill_color[1]-60, self.fill_color[1]-60)
-        self.grad_surface = Gradient(begin_color, end_color, self.w, self.h)
+        self.grad_surface = Gradient(self.gradient_start_color, self.gradient_end_color, self.w, self.h)
         self.temp_grad_surface = self.grad_surface
 
     def draw(self, display, mouse_pos, mouse_button=0, keys=0, delta_time=0, event_list=[]):
@@ -241,10 +246,10 @@ class Label(Widget):
 class TextFrame(Frame, Label):
     """Creates frame with text to display"""
 
-    allowed_kwargs = ["x", "y", "w", "h", "fill", "border", "bordercolor",
-                            "hover", "hovercolor", "gradient", "text", "align",
-                            "borderthickness", "anchor", "fontcolor", "fontsize",
-                            "bold"]
+    allowed_kwargs = [
+        "x", "y", "w", "h", "fill", "border", "bordercolor",
+        "hover", "hovercolor", "gradient", "text", "align",
+        "borderthickness", "anchor", "fontcolor", "fontsize", "bold"]
 
 
     def __init__(self, class_name="TextFrame", **kwargs):
@@ -318,10 +323,11 @@ class AbstractButton(Widget):
 class Button(AbstractButton, TextFrame):
     """Class which allows you to draw fully functional button"""
 
-    allowed_kwargs = ["x", "y", "w", "h", "fill", "border", "bordercolor",
-                            "hover", "hovercolor", "pressedcolor", "gradient",
-                            "text", "align", "borderthickness", "anchor", "fontcolor",
-                            "fontsize", "bold", "func"]
+    allowed_kwargs = [
+        "x", "y", "w", "h", "fill", "border", "bordercolor",
+        "hover", "hovercolor", "pressedcolor", "gradient",
+        "text", "align", "borderthickness", "anchor", "fontcolor",
+        "fontsize", "bold", "func"]
 
 
     def __init__(self, class_name="Button", **kwargs):
@@ -462,9 +468,10 @@ class AbstractEntry(Widget):
 class EntryWidget(AbstractEntry, AbstractButton, Frame):
     """Creates entry which allows you to write some text"""
 
-    allowed_kwargs = ["x", "y", "w", "h", "fill", "border", "bordercolor",
-                            "hover", "hovercolor", "gradient", "borderthickness",
-                            "activebordercolor"]
+    allowed_kwargs = [
+        "x", "y", "w", "h", "fill", "border", "bordercolor",
+        "hover", "hovercolor", "gradient", "borderthickness",
+        "activebordercolor"]
 
     def __init__(self, class_name="EntryWidget", **kwargs):
         """
@@ -568,34 +575,38 @@ class ColorSurface:
 class Gradient:
     """Class which calculates surface with gradient"""
 
-    def __init__(self, begin, end, w, h):
+    def __init__(self, begin, end, w, h, orientation="vertical"):
         self.gradient_surface = pygame.Surface((w, h), pygame.HWSURFACE)
-        self.gradient(self.gradient_surface, begin, end, w, h)
+        if orientation == "vertical":
+            self.vertical_gradient(self.gradient_surface, begin, end, w, h)
+        else:
+            self.horizontal_gradient(self.gradient_surface, begin, end, w, h)
 
-    def gradient(self, surface, begin, end, w, h):
-        r, g, b = begin[0], begin[1], begin[2]
+    def vertical_gradient(self, surface, begin, end, w, h):
+        begin_red, begin_green, begin_blue = begin
+        end_red, end_green, end_blue = end 
         for layer in range(h):
+            r = begin_red + layer/h * (end_red - begin_red);
+            g = begin_green + layer/h * (end_green - begin_green);
+            b = begin_blue + layer/h * (end_blue - begin_blue);
             pygame.draw.line(surface,
                              (self.to_zero(r),
                               self.to_zero(g),
                               self.to_zero(b)),
                              (0, 0 + layer), (0 + w, 0 + layer), 1)
-            if begin[0] < end[0]:
-                if r > end[0]:
-                    continue
-                color_step = abs(end[0] - begin[0]) // h
-                r += color_step
-                g += color_step
-                b += color_step
-            elif begin[0] > end[0]:
-                if r < end[0]:
-                    continue
-                color_step = abs(end[0] - begin[0]) // h
-                r -= color_step
-                g -= color_step
-                b -= color_step
-            else:
-                pass
+
+    def horizontal_gradient(self, surface, begin, end, w, h):
+        begin_red, begin_green, begin_blue = begin
+        end_red, end_green, end_blue = end 
+        for layer in range(h):
+            r = begin_red + layer/h * (end_red - begin_red);
+            g = begin_green + layer/h * (end_green - begin_green);
+            b = begin_blue + layer/h * (end_blue - begin_blue);
+            pygame.draw.line(surface,
+                             (self.to_zero(r),
+                              self.to_zero(g),
+                              self.to_zero(b)),
+                             (0 + layer, 0), (0 + layer, 0 + h), 1)
 
     def get_surface(self):
         return self.gradient_surface

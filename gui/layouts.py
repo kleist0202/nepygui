@@ -81,7 +81,10 @@ class VLayout(Layout):
                     self.curr_y = self.y_size/2 - curr_h/2 + self.y_start
                     for j, curr_widget in enumerate(self.widgets):
                         curr_w2, curr_h2 = curr_widget.get_size()
-                        self.curr_y -= curr_h2/2 + self.keep_padd_info[j]/2
+                        if j != 0:
+                            self.curr_y -= curr_h2/2 + self.keep_padd_info[j]/2
+                        else:
+                            self.curr_y -= self.keep_padd_info[j]/2
 
                 self.curr_x = self.x_size/2 - curr_w/2 + self.x_start
                 widget.set_pos(self.curr_x,
@@ -225,7 +228,10 @@ class HLayout(Layout):
                     self.curr_x = self.x_size/2 - curr_w/2 + self.x_start
                     for j, curr_widget in enumerate(self.widgets):
                         curr_w2, curr_h2 = curr_widget.get_size()
-                        self.curr_x -= curr_w2/2 + self.keep_padd_info[j]/2
+                        if j != 0:
+                            self.curr_x -= curr_w2/2 + self.keep_padd_info[j]/2
+                        else:
+                            self.curr_x -= self.keep_padd_info[j]/2
                 self.curr_y = self.y_size/2 - curr_h/2 + self.y_start
                 widget.set_pos(self.curr_x,
                                self.curr_y)

@@ -51,10 +51,17 @@ class VLayout(Layout):
         self.keep_padd_info = []
         self.curr_x = 0
         self.curr_y = 0
+        self.greatest_width = 0
 
     def add_widget(self, widget, ypadd=0):
         self.widgets.append(widget)
         self.keep_padd_info.append(ypadd)
+        self.greatest_width = (max(widget.w for widget in self.widgets))
+
+        # adjust every widget to greatest width
+        for curr_widget in self.widgets:
+            _, curr_h = curr_widget.get_size()
+            curr_widget.set_size(self.greatest_width, curr_h)
 
     @Layout.window_resize_callback
     def draw(self, screen, mouse_pos, mouse_button, keys, delta_time, event_list):
@@ -74,10 +81,7 @@ class VLayout(Layout):
                     self.curr_y = self.y_size/2 - curr_h/2 + self.y_start
                     for j, curr_widget in enumerate(self.widgets):
                         curr_w2, curr_h2 = curr_widget.get_size()
-                        if j != 0:
-                            self.curr_y -= curr_h2/2 + self.keep_padd_info[j]/2
-                        else:
-                            self.curr_y -= self.keep_padd_info[j]/2
+                        self.curr_y -= curr_h2/2 + self.keep_padd_info[j]/2
 
                 self.curr_x = self.x_size/2 - curr_w/2 + self.x_start
                 widget.set_pos(self.curr_x,
@@ -193,10 +197,17 @@ class HLayout(Layout):
         self.keep_padd_info = []
         self.curr_x = 0
         self.curr_y = 0
+        self.greatest_height = 0
 
     def add_widget(self, widget, ypadd=0):
         self.widgets.append(widget)
         self.keep_padd_info.append(ypadd)
+        self.greatest_height = max(widget.h for widget in self.widgets)
+
+        # adjust every widget to greatest height
+        for curr_widget in self.widgets:
+            curr_w, _ = curr_widget.get_size()
+            curr_widget.set_size(curr_w, self.greatest_height)
 
     @Layout.window_resize_callback
     def draw(self, screen, mouse_pos, mouse_button, keys, delta_time, event_list):
@@ -214,10 +225,7 @@ class HLayout(Layout):
                     self.curr_x = self.x_size/2 - curr_w/2 + self.x_start
                     for j, curr_widget in enumerate(self.widgets):
                         curr_w2, curr_h2 = curr_widget.get_size()
-                        if j != 0:
-                            self.curr_x -= curr_w2/2 + self.keep_padd_info[j]/2
-                        else:
-                            self.curr_x -= self.keep_padd_info[j]/2
+                        self.curr_x -= curr_w2/2 + self.keep_padd_info[j]/2
                 self.curr_y = self.y_size/2 - curr_h/2 + self.y_start
                 widget.set_pos(self.curr_x,
                                self.curr_y)

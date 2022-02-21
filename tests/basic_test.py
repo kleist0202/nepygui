@@ -11,18 +11,15 @@ def main(args):
     e = gui.EntryWidget(x=400, y=400, w=200, h=60, borderthickness=6)
     e2 = gui.EntryWidget(x=400, y=200, w=200, h=60)
 
-    vb1 = gui.Button(w=100, h=50, text="1", fill=(200,10,1))
+    vb1 = gui.Button(w=100, h=150, text="1", fill=(200,10,1))
     vb2 = gui.Button(w=100, h=50, text="2", fill=(200,10,1))
 
-    vlayout = gui.VLayout(w, orientation="C", x_start=10)
-    hlayout = gui.HLayout(w, orientation="W")
-    vlayout.add_widget(vb1, 10)
-    vlayout.add_widget(vb2, 20)
-    vlayout.add_widget(e2, 10)
-    vlayout.add_widget(gui.Button(w=25, h=10))
+    vlayout = gui.VLayout(w, orientation="C")
+    hlayout = gui.HLayout(w, orientation="C")
+    hlayout.add_widget(vb1)
+    hlayout.add_widget(vb2)
+    hlayout.add_widget(e2)
 
-    hlayout.add_widget(gui.Button(w=25, h=10))
-    hlayout.add_widget(gui.Button(w=25, h=10))
     hlayout.add_widget(vb1)
 
     gridlayout = gui.GridLayout(w, orientation="W")
@@ -41,6 +38,7 @@ def main(args):
 
     #w.layouts.append(gridlayout)
     w.layouts.append(hlayout)
+    w.layouts.append(vlayout)
     w.main_loop()
 
 

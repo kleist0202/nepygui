@@ -91,7 +91,7 @@ class Frame(Widget):
         self.hover_color = kwargs.get("hovercolor", self.fill_color)
         self.is_gradient = kwargs.get("gradient", False)
         self.gradient_start_color = kwargs.get("gradientstart", self.fill_color)
-        self.gradient_end_color = kwargs.get("gradientend", map(lambda x: x - 60, self.fill_color))
+        self.gradient_end_color = kwargs.get("gradientend", tuple(map(lambda x: x - 60, self.fill_color)))
         self.border_thickness = kwargs.get("borderthickness", 0)
         self.surf_init()
 
@@ -246,7 +246,8 @@ class TextFrame(Frame, Label):
     allowed_kwargs = [
         "x", "y", "w", "h", "fill", "bordercolor",
         "hover", "hovercolor", "gradient", "text", "align",
-        "borderthickness", "anchor", "fontcolor", "fontsize", "bold"]
+        "borderthickness", "anchor", "fontcolor", "fontsize", "bold",
+        "gradientstart", "gradientend"]
 
 
     def __init__(self, class_name="TextFrame", **kwargs):
@@ -279,10 +280,14 @@ class TextFrame(Frame, Label):
             self.w = self.text_object.get_text_width()
             Frame.recreate(self, w=self.w, h=self.h)
 
+        if self.h < self.text_object.get_text_height():
+            self.h = self.text_object.get_text_height()
+            Frame.recreate(self, w=self.w, h=self.h)
+
         Label.set_padding(self, Label.get_padding(self)
                           + self.border_thickness/2)
 
-    def draw(self, display, mouse_pos, mouse_key=0, keys=0, delta_time=0):
+    def draw(self, display, mouse_pos, mouse_key=0, keys=0, delta_time=0, event_list=[]):
         Frame.draw(self, display, mouse_pos)
         Label.draw(self, display)
 
@@ -363,11 +368,18 @@ class Button(AbstractButton, TextFrame):
         self.is_gradient = kwargs.get("gradient", True)
         self.border_thickness = kwargs.get("borderthickness", 2)
 
+    def recreate(self, **kwargs):
+        super().recreate(**kwargs)
+        self.color_surface_pressed = ColorSurface(self.color_pressed, self.w, self.h)
+
     def draw(self, display, mouse_pos, mouse_key, keys=0, delta_time=0, event_list=[]):
         TextFrame.draw(self, display, mouse_pos)
         if(super().is_clicked(mouse_pos, mouse_key)):
             self.fill_surface = self.color_surface_pressed
             self.grad_surface = self.color_surface_pressed
+
+    def __repr__(self):
+        return __class__.__name__
 
 
 class AbstractEntry(Widget):

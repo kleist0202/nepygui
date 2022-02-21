@@ -14,11 +14,13 @@ class Window:
         self.running = True
         self.screen_color = (100, 100, 200)
         self.caption = "Project"
+        self.resizable = True
         self.info = pygame.display.Info()
         self.window_size = (800, 600)
 
         self.widgets = []
-        self.srufaces = []
+        self.surfaces = []
+        self.layouts = []
 
         self.clock = pygame.time.Clock()
         self.fps = Fps()
@@ -39,8 +41,11 @@ class Window:
     def set_window_size(self, w: int, h: int) -> None:
         self.window_size = (w, h)
 
-    def set_window_size(self, w: int, h: int) -> None:
-        self.window_size = (w, h)
+    def get_screen(self):
+        return self.screen
+
+    def get_size(self):
+        return self.window_size
 
     def main_loop(self) -> None:
         pygame.display.set_caption(self.caption)
@@ -49,10 +54,17 @@ class Window:
             self.window_size = (0, 0)
             self.options |= pygame.FULLSCREEN
 
+        if self.resizable:
+            self.options |= pygame.RESIZABLE
+
         self.screen = pygame.display.set_mode(self.window_size, self.options)
+        
+        for layout in self.layouts:
+            layout.put()
 
         while self.running:
             event_list = pygame.event.get()
+            self.window_size = self.screen.get_size()
             self.global_events(event_list)
             self.screen.fill(self.screen_color)
 
@@ -68,6 +80,9 @@ class Window:
 
             for surface in self.surfaces:
                 self.screen.blit(surface, (0,0))
+
+            for layout in self.layouts:
+                layout.draw(self.screen, mouse_pos, mouse_button, keys, self.delta_time, event_list)
 
             # fps management
             self.fps.fps()

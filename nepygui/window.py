@@ -5,6 +5,9 @@ from .widgets import Frame
 class Window:
     def __init__(self, **args):
 
+        # init pygame
+        pygame.init()
+
         # variables
 
         self.fullscreen = False

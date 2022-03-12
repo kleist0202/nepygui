@@ -10,4 +10,7 @@ setup(
     url='https://github.com/kleist0202/nepygui',
     # packages=find_packages(exclude=('tests*')),
     packages=['nepygui'],
+    install_requires=[
+        'pygame',
+    ],
 )

@@ -328,6 +328,7 @@ class Button(AbstractButton, TextFrame):
         "x", "y", "w", "h", "fill", "bordercolor",
         "hover", "hovercolor", "pressedcolor", "gradient",
         "text", "align", "borderthickness", "anchor", "fontcolor",
+        "gradientstart", "gradientend",
         "fontsize", "bold", "func"]
 
 

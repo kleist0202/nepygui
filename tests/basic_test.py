@@ -11,33 +11,31 @@ def main(args):
     e = gui.EntryWidget(x=400, y=400, w=200, h=60, borderthickness=6)
     e2 = gui.EntryWidget(x=400, y=200, w=200, h=60)
 
-    vb1 = gui.Button(w=100, h=150, text="1", fill=(200,10,1))
-    vb2 = gui.Button(w=100, h=50, text="2", fill=(200,10,1))
-
     vlayout = gui.VLayout(w, orientation="C")
     hlayout = gui.HLayout(w, orientation="C")
-    hlayout.add_widget(vb1)
-    hlayout.add_widget(vb2)
-    hlayout.add_widget(e2)
-
-    hlayout.add_widget(vb1)
-
     gridlayout = gui.GridLayout(w, orientation="W")
 
-    #gridlayout.add_widget(gui.Button(), 4, 4)
-    #gridlayout.add_widget(gui.Button(), 4, 0)
-    #gridlayout.add_widget(gui.Button(), 5, 0)
-    #gridlayout.add_widget(gui.Button(), 5, 2)
+    vlayout.add_widget(e2)
+    vlayout.add_widget(e)
 
-    #val = 0
-    #for i in range(4):
-    #    for j in range(4):
-    #        bij = gui.Button(w=20, h=20, text=str(val), hover=True, gradient=True, fill=(200,10,1))
-    #        gridlayout.add_widget(bij, i, j)
-    #        val += 1
+    gridlayout.add_widget(gui.Button(), 4, 4)
+    gridlayout.add_widget(gui.Button(), 4, 0)
+    gridlayout.add_widget(gui.Button(), 4, 0)
+    gridlayout.add_widget(gui.Button(), 4, 2)
+    gridlayout.add_widget(gui.Button(), 0, 4)
+    gridlayout.add_widget(gui.Button(), 2, 4)
+    gridlayout.add_widget(gui.Button(), 4, 4)
+    gridlayout.add_widget(gui.Button(), 5, 1)
 
-    #w.layouts.append(gridlayout)
-    w.layouts.append(hlayout)
+    val = 0
+    for i in range(4):
+        for j in range(4):
+            bij = gui.Button(w=50, h=50, text=str(val), hover=True, gradient=True, fill=(200,10,1), gradientstart=(255,255,0), gradientend=(0,50,50))
+            gridlayout.add_widget(bij, i, j)
+            val += 1
+
+    w.layouts.append(gridlayout)
+    #w.layouts.append(hlayout)
     w.layouts.append(vlayout)
     w.main_loop()
 

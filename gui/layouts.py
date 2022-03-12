@@ -80,7 +80,7 @@ class VLayout(Layout):
                 if i == 0:
                     self.curr_y = self.y_size/2 - curr_h/2 + self.y_start
                     for j, curr_widget in enumerate(self.widgets):
-                        curr_w2, curr_h2 = curr_widget.get_size()
+                        _, curr_h2 = curr_widget.get_size()
                         if j != 0:
                             self.curr_y -= curr_h2/2 + self.keep_padd_info[j]/2
                         else:
@@ -103,7 +103,7 @@ class VLayout(Layout):
                 if i == 0:
                     self.curr_y = self.y_size - curr_h + self.y_start
                     for j, curr_widget in enumerate(self.widgets):
-                        curr_w2, curr_h2 = curr_widget.get_size()
+                        _, curr_h2 = curr_widget.get_size()
                         if j != 0:
                             self.curr_y -= curr_h2 + self.keep_padd_info[j]
                         else:
@@ -117,7 +117,7 @@ class VLayout(Layout):
                 if i == 0:
                     self.curr_y = self.y_size/2 - curr_h/2 + self.y_start
                     for j, curr_widget in enumerate(self.widgets):
-                        curr_w2, curr_h2 = curr_widget.get_size()
+                        _, curr_h2 = curr_widget.get_size()
                         if j != 0:
                             self.curr_y -= curr_h2/2 + self.keep_padd_info[j]/2
                         else:
@@ -131,7 +131,7 @@ class VLayout(Layout):
                 if i == 0:
                     self.curr_y = self.y_size/2 - curr_h/2 + self.y_start
                     for j, curr_widget in enumerate(self.widgets):
-                        curr_w2, curr_h2 = curr_widget.get_size()
+                        _, curr_h2 = curr_widget.get_size()
                         if j != 0:
                             self.curr_y -= curr_h2/2 + self.keep_padd_info[j]/2
                         else:
@@ -161,7 +161,7 @@ class VLayout(Layout):
                 if i == 0:
                     self.curr_y = self.y_size - curr_h + self.y_start
                     for j, curr_widget in enumerate(self.widgets):
-                        curr_w2, curr_h2 = curr_widget.get_size()
+                        _, curr_h2 = curr_widget.get_size()
                         if j != 0:
                             self.curr_y -= curr_h2 + self.keep_padd_info[j]
                         else:
@@ -175,7 +175,7 @@ class VLayout(Layout):
                 if i == 0:
                     self.curr_y = self.y_size - curr_h + self.y_start
                     for j, curr_widget in enumerate(self.widgets):
-                        curr_w2, curr_h2 = curr_widget.get_size()
+                        _, curr_h2 = curr_widget.get_size()
                         if j != 0:
                             self.curr_y -= curr_h2 + self.keep_padd_info[j]
                         else:
@@ -227,7 +227,7 @@ class HLayout(Layout):
                 if i == 0:
                     self.curr_x = self.x_size/2 - curr_w/2 + self.x_start
                     for j, curr_widget in enumerate(self.widgets):
-                        curr_w2, curr_h2 = curr_widget.get_size()
+                        curr_w2, _ = curr_widget.get_size()
                         if j != 0:
                             self.curr_x -= curr_w2/2 + self.keep_padd_info[j]/2
                         else:
@@ -249,7 +249,7 @@ class HLayout(Layout):
                 if i == 0:
                     self.curr_x = self.x_size - curr_w + self.x_start
                     for j, curr_widget in enumerate(self.widgets):
-                        curr_w2, curr_h2 = curr_widget.get_size()
+                        curr_w2, _ = curr_widget.get_size()
                         if j != 0:
                             self.curr_x -= curr_w2 + self.keep_padd_info[j]
                         else:
@@ -263,7 +263,7 @@ class HLayout(Layout):
                 if i == 0:
                     self.curr_x = self.x_size/2 - curr_w/2 + self.x_start
                     for j, curr_widget in enumerate(self.widgets):
-                        curr_w2, curr_h2 = curr_widget.get_size()
+                        curr_w2, _ = curr_widget.get_size()
                         if j != 0:
                             self.curr_x -= curr_w2/2 + self.keep_padd_info[j]/2
                         else:
@@ -277,7 +277,7 @@ class HLayout(Layout):
                 if i == 0:
                     self.curr_x = self.x_size/2 - curr_w/2 + self.x_start
                     for j, curr_widget in enumerate(self.widgets):
-                        curr_w2, curr_h2 = curr_widget.get_size()
+                        curr_w2, _ = curr_widget.get_size()
                         if j != 0:
                             self.curr_x -= curr_w2/2 + self.keep_padd_info[j]/2
                         else:
@@ -307,7 +307,7 @@ class HLayout(Layout):
                 if i == 0:
                     self.curr_x = self.x_size - curr_w + self.x_start
                     for j, curr_widget in enumerate(self.widgets):
-                        curr_w2, curr_h2 = curr_widget.get_size()
+                        curr_w2, _ = curr_widget.get_size()
                         if j != 0:
                             self.curr_x -= curr_w2 + self.keep_padd_info[j]
                         else:
@@ -320,7 +320,7 @@ class HLayout(Layout):
                 if i == 0:
                     self.curr_x = self.x_size - curr_w + self.x_start
                     for j, curr_widget in enumerate(self.widgets):
-                        curr_w2, curr_h2 = curr_widget.get_size()
+                        curr_w2, _ = curr_widget.get_size()
                         if j != 0:
                             self.curr_x -= curr_w2 + self.keep_padd_info[j]
                         else:
@@ -344,12 +344,15 @@ class GridLayout(Layout):
         self.y_start = y_start
         self.curr_x = 0
         self.curr_y = 0
+        self.main_x = 0
         self.keep_padd_info = []
         self.pre_widgets = []
 
     def add_widget(self, widget, row, col, xpadd=0, ypadd=0):
         self.widgets = [[None]]
         self.pre_widgets.append([widget, row, col])
+        self.greatest_width = max(widget[0].w for widget in self.pre_widgets)
+        self.greatest_height = max(widget[0].h for widget in self.pre_widgets)
 
         for pre_widget in self.pre_widgets:
             self.set_order(*pre_widget)
@@ -362,7 +365,6 @@ class GridLayout(Layout):
         while True:
             longest_length = max([len(a) for a in self.widgets])
             c = self.get_column(self.widgets, r)
-            print(c)
             if all(e is None for e in c):
                 for j in self.widgets:
                     del j[r]
@@ -371,6 +373,13 @@ class GridLayout(Layout):
                 r += 1
             if r >= longest_length:
                 break
+            
+        # adjust every widget to greatest width and height
+        for curr_widget_r in self.widgets:
+            for curr_widget in curr_widget_r:
+                if curr_widget is None:
+                    continue
+                curr_widget.set_size(self.greatest_width, self.greatest_height)
 
 
     def set_order(self, widget, row=0, col=0):
@@ -401,21 +410,23 @@ class GridLayout(Layout):
         for i, widgets_r in enumerate(self.widgets):
             for j, widget in enumerate(widgets_r):
                 if widget is None:
+                    self.curr_x += self.greatest_width
                     continue
                 curr_w, curr_h = widget.get_size()
 
                 # bloated
                 if self.orientation == "C":
-                    if i == 0:
+                    if i == 0 and j == 0:
                         self.curr_x = self.x_size/2 - curr_w/2 + self.x_start
+                        self.curr_y = self.y_size/2 - curr_h/2 + self.y_start
                         for k, widgets_r2 in enumerate(self.widgets):
                             for l, curr_widget in enumerate(widgets_r2):
                                 if curr_widget is None:
                                     continue
-                                curr_w2, _ = curr_widget.get_size()
-                                if l != 0:
-                                    self.curr_x -= curr_w2/2
-                    self.curr_y = self.y_size/2 - curr_h/2 + self.y_start
+                            if k != 0:
+                                self.curr_x -= self.greatest_width/2
+                                self.curr_y -= self.greatest_height/2
+                        self.main_x = self.curr_x
                     widget.set_pos(self.curr_x,
                                    self.curr_y)
 
@@ -423,15 +434,20 @@ class GridLayout(Layout):
                     if i == 0 and j == 0:
                         self.curr_x = self.x_start
                         self.curr_y = self.y_size/2 - curr_h/2 + self.y_start
-                        for k, curr_widget in enumerate(widgets_r):
+                        for k, curr_widget_r in enumerate(self.widgets):
+                            rows = len(curr_widget_r)
+                            for l, curr_widget in enumerate(curr_widget_r):
+                                if curr_widget is None:
+                                     continue
                             if k != 0:
-                                curr_w2, curr_h2 = curr_widget.get_size()
-                                self.curr_y -= curr_h2/2
+                                self.curr_y -= self.greatest_height/2
+                        self.main_x = self.curr_x
                     widget.set_pos(self.curr_x,
                                    self.curr_y)
 
                 self.curr_x += curr_w
-            self.curr_x = self.x_start
+
+            self.curr_x = self.main_x
             self.curr_y += curr_h
 
     def resize(self):

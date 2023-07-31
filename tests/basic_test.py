@@ -1,6 +1,6 @@
 import pygame
 import argparse
-from context import nepygui
+import nepygui
 
 p = argparse.ArgumentParser(formatter_class=argparse.MetavarTypeHelpFormatter)
 

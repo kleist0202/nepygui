@@ -37,10 +37,10 @@ def main(args):
     w.layouts.append(gridlayout)
     #w.layouts.append(hlayout)
     w.layouts.append(vlayout)
+    w.init_window()
     w.main_loop()
 
 
 if __name__ == "__main__":
-    pygame.init()
     args = p.parse_args()
     main(args)

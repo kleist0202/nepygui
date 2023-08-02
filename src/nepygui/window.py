@@ -32,6 +32,21 @@ class Window:
 
         self.last_frame_time = pygame.time.get_ticks()
 
+    def init_window(self):
+        pygame.display.set_caption(self.caption)
+
+        if self.fullscreen:
+            self.window_size = (0, 0)
+            self.options |= pygame.FULLSCREEN
+
+        if self.resizable:
+            self.options |= pygame.RESIZABLE
+
+        self.screen = pygame.display.set_mode(self.window_size, self.options)
+        
+        for layout in self.layouts:
+            layout.put()
+
     def set_fullscreen(self, fullscreen: bool) -> None:
         self.fullscreen = fullscreen
 
@@ -51,20 +66,6 @@ class Window:
         return self.window_size
 
     def main_loop(self) -> None:
-        pygame.display.set_caption(self.caption)
-
-        if self.fullscreen:
-            self.window_size = (0, 0)
-            self.options |= pygame.FULLSCREEN
-
-        if self.resizable:
-            self.options |= pygame.RESIZABLE
-
-        self.screen = pygame.display.set_mode(self.window_size, self.options)
-        
-        for layout in self.layouts:
-            layout.put()
-
         while self.running:
             event_list = pygame.event.get()
             self.window_size = self.screen.get_size()

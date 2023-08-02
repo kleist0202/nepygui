@@ -29,6 +29,9 @@ class Window:
         self.fps = Fps()
 
         self.delta_time = 0
+        self.mouse_button = pygame.mouse.get_pressed()
+        self.mouse_pos = pygame.mouse.get_pos()
+        self.keys = pygame.key.get_pressed()
 
         self.last_frame_time = pygame.time.get_ticks()
 
@@ -75,18 +78,18 @@ class Window:
             # ------------ scene ------------- #
 
             # get mouse and keyboard input
-            mouse_button = pygame.mouse.get_pressed()
-            mouse_pos = pygame.mouse.get_pos()
-            keys = pygame.key.get_pressed()
+            self.mouse_button = pygame.mouse.get_pressed()
+            self.mouse_pos = pygame.mouse.get_pos()
+            self.keys = pygame.key.get_pressed()
 
             for widget in self.widgets:
-                widget.draw(self.screen, mouse_pos, mouse_button, keys, self.delta_time, event_list)
+                widget.draw(self.screen, self.mouse_pos, self.mouse_button, self.keys, self.delta_time, event_list)
 
             for surface in self.surfaces:
                 self.screen.blit(surface, (0,0))
 
             for layout in self.layouts:
-                layout.draw(self.screen, mouse_pos, mouse_button, keys, self.delta_time, event_list)
+                layout.draw(self.screen, self.mouse_pos, self.mouse_button, self.keys, self.delta_time, event_list)
 
             # fps management
             self.fps.fps()

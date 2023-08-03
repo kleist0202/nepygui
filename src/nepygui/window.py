@@ -105,8 +105,6 @@ class Window:
             self.last_frame_time = current_frame_time
             self.clock.tick(60)
 
-        self.kill()
-
     def global_events(self, event_list) -> None:
         for event in event_list:
             if event.type == pygame.QUIT:
@@ -115,7 +113,5 @@ class Window:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
 
-    @staticmethod
-    def kill() -> None:
-        pygame.quit()
-
+    def exit(self) -> None:
+        self.running = False

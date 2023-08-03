@@ -379,7 +379,7 @@ class GridLayout(Layout):
             for curr_widget in curr_widget_r:
                 if curr_widget is None:
                     continue
-                curr_widget.set_size(self.greatest_width, self.greatest_height)
+                # curr_widget.set_size(self.greatest_width, self.greatest_height)
 
 
     def set_order(self, widget, row=0, col=0):

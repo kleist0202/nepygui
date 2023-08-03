@@ -174,7 +174,7 @@ class Label(Widget):
         self.text_padding = 4
         # FIXME: There is no vertical padding
 
-    def draw(self, display, mouse_pos=0, mouse_key=0, keys=0, delta_time=0):
+    def draw(self, display, mouse_pos=0, mouse_key=0, keys=0, delta_time=0, event_list=[]):
         vertical_center = self.y + self.h / 2 - self.text_object.get_text_height() / 2
         horizontal_center = self.x + self.w / 2 - self.text_object.get_text_width() / 2
 

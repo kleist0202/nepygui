@@ -309,7 +309,7 @@ class AbstractButton(Widget):
                     if self.function == None:
                         pass
                     else:
-                        self.function()
+                        self.function(self)
 
             # when mouse hover on the button, we can check if mouse button is pressed and trigger an event
             if mouse_key[0]:

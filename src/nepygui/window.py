@@ -1,6 +1,6 @@
 import pygame
 from .fps import Fps
-from .widgets import Frame
+from. layouts import Layout
 
 class Window:
     def __init__(self, **args):
@@ -21,10 +21,6 @@ class Window:
         self.info = pygame.display.Info()
         self.window_size = (800, 600)
 
-        self.widgets = []
-        self.surfaces = []
-        self.layouts = []
-
         self.clock = pygame.time.Clock()
         self.fps = Fps()
 
@@ -34,6 +30,24 @@ class Window:
         self.keys = pygame.key.get_pressed()
 
         self.last_frame_time = pygame.time.get_ticks()
+
+        self.current_menu = "default"
+        self.menus_dict = {self.current_menu: []}
+        self.current_menu_list = []
+        self.switch_menus("default")
+
+    def add_to_menu(self, widget, menu_name="default"):
+        if menu_name not in self.menus_dict:
+            self.menus_dict[menu_name] = []
+        self.menus_dict[menu_name].append(widget)
+
+        for layout in self.current_menu_list:
+            if isinstance(layout, Layout):
+                layout.put()
+
+    def switch_menus(self, menu_name):
+        self.current_menu = menu_name
+        self.current_menu_list = self.menus_dict.get(self.current_menu, self.menus_dict["default"])
 
     def init_window(self):
         pygame.display.set_caption(self.caption)
@@ -47,9 +61,6 @@ class Window:
 
         self.screen = pygame.display.set_mode(self.window_size, self.options)
         
-        for layout in self.layouts:
-            layout.put()
-
     def set_fullscreen(self, fullscreen: bool) -> None:
         self.fullscreen = fullscreen
 
@@ -69,6 +80,10 @@ class Window:
         return self.window_size
 
     def main_loop(self) -> None:
+        if self.screen is None:
+            print("You forgot to initialize window! Call init_window() function before calling main_loop().")
+            return
+
         while self.running:
             event_list = pygame.event.get()
             self.window_size = self.screen.get_size()
@@ -82,14 +97,8 @@ class Window:
             self.mouse_pos = pygame.mouse.get_pos()
             self.keys = pygame.key.get_pressed()
 
-            for widget in self.widgets:
+            for widget in self.current_menu_list:
                 widget.draw(self.screen, self.mouse_pos, self.mouse_button, self.keys, self.delta_time, event_list)
-
-            for surface in self.surfaces:
-                self.screen.blit(surface, (0,0))
-
-            for layout in self.layouts:
-                layout.draw(self.screen, self.mouse_pos, self.mouse_button, self.keys, self.delta_time, event_list)
 
             # fps management
             self.fps.fps()

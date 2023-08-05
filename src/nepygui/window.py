@@ -35,6 +35,13 @@ class Window:
         self.menus_dict = {self.current_menu: []}
         self.current_menu_list = []
         self.switch_menus("default")
+        self.resize_callback_func = lambda: None
+
+    def window_resize_callback(self, screen_size, func):
+        if self.window_size[0] != screen_size[0]:
+            func()
+        elif self.window_size[1] != screen_size[1]:
+            func()
 
     def add_to_menu(self, widget, menu_name="default"):
         if menu_name not in self.menus_dict:
@@ -86,6 +93,7 @@ class Window:
 
         while self.running:
             event_list = pygame.event.get()
+            self.window_resize_callback(self.screen.get_size(), self.resize_callback_func)
             self.window_size = self.screen.get_size()
             self.global_events(event_list)
             self.screen.fill(self.screen_color)

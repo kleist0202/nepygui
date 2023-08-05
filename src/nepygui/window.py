@@ -41,13 +41,13 @@ class Window:
             self.menus_dict[menu_name] = []
         self.menus_dict[menu_name].append(widget)
 
-        for layout in self.current_menu_list:
-            if isinstance(layout, Layout):
-                layout.put()
-
     def switch_menus(self, menu_name):
         self.current_menu = menu_name
         self.current_menu_list = self.menus_dict.get(self.current_menu, self.menus_dict["default"])
+
+        for layout in self.current_menu_list:
+            if isinstance(layout, Layout):
+                layout.put()
 
     def init_window(self):
         pygame.display.set_caption(self.caption)

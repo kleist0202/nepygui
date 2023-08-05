@@ -93,6 +93,7 @@ class Frame(Widget):
         self.gradient_start_color = kwargs.get("gradientstart", self.fill_color)
         self.gradient_end_color = kwargs.get("gradientend", tuple(map(lambda x: x - 60, self.fill_color)))
         self.border_thickness = kwargs.get("borderthickness", 0)
+        self.hidden = False
         self.surf_init()
 
     def recreate(self, **kwargs):
@@ -115,6 +116,8 @@ class Frame(Widget):
         self.temp_grad_surface = self.grad_surface
 
     def draw(self, display, mouse_pos, mouse_button=0, keys=0, delta_time=0, event_list=[]):
+        if self.hidden:
+            return
         if self.is_gradient:
             Special_Functions.border_rect(display, self.grad_surface.get_surface(),
                                           self.border_color, self.x, self.y, self.w, self.h, self.border_thickness)
@@ -134,6 +137,9 @@ class Frame(Widget):
         else:
             self.fill_surface = self.temp_fill_surface
             self.grad_surface = self.temp_grad_surface
+
+    def hide(self, flag):
+        self.hidden = flag
 
 
 class Label(Widget):
@@ -288,6 +294,8 @@ class TextFrame(Frame, Label):
                           + self.border_thickness/2)
 
     def draw(self, display, mouse_pos, mouse_key=0, keys=0, delta_time=0, event_list=[]):
+        if self.hidden:
+            return
         Frame.draw(self, display, mouse_pos)
         Label.draw(self, display)
 
@@ -368,16 +376,24 @@ class Button(AbstractButton, TextFrame):
         # default settings
         self.is_gradient = kwargs.get("gradient", True)
         self.border_thickness = kwargs.get("borderthickness", 2)
+        self.clicking_blocked = False
 
     def recreate(self, **kwargs):
         super().recreate(**kwargs)
         self.color_surface_pressed = ColorSurface(self.color_pressed, self.w, self.h)
 
     def draw(self, display, mouse_pos, mouse_key, keys=0, delta_time=0, event_list=[]):
+        if self.hidden:
+            return
         TextFrame.draw(self, display, mouse_pos)
+        if self.clicking_blocked:
+            return
         if(super().is_clicked(mouse_pos, mouse_key)):
             self.fill_surface = self.color_surface_pressed
             self.grad_surface = self.color_surface_pressed
+
+    def block(self, flag):
+        self.clicking_blocked = flag
 
     def __repr__(self):
         return __class__.__name__
@@ -514,6 +530,8 @@ class EntryWidget(AbstractEntry, AbstractButton, Frame):
         self.function = self.activate
 
     def draw(self, display, mouse_pos, mouse_key, keys, delta_time, event_list):
+        if self.hidden:
+            return
         AbstractButton.is_clicked(self, mouse_pos, mouse_key)
         Frame.draw(self, display, mouse_pos)
         if self.is_active:

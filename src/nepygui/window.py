@@ -34,7 +34,6 @@ class Window:
         self.current_menu = "default"
         self.menus_dict = {self.current_menu: []}
         self.current_menu_list = []
-        self.switch_menus("default")
         self.resize_callback_func = lambda: None
 
     # def window_resize_callback(self, screen_size, func):
@@ -92,6 +91,8 @@ class Window:
         if self.screen is None:
             print("You forgot to initialize window! Call init_window() function before calling main_loop().")
             return
+
+        self.switch_menus("default")
 
         while self.running:
             event_list = pygame.event.get()

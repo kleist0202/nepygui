@@ -547,7 +547,7 @@ class EntryWidget(AbstractEntry, AbstractButton, Frame):
             if mouse_key[0]:
                 self.deactivate()
 
-    def activate(self):
+    def activate(btn, self):
         self.is_active = True
 
     def deactivate(self):

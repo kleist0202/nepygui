@@ -35,6 +35,7 @@ class Window:
         self.menus_dict = {self.current_menu: []}
         self.current_menu_list = []
         self.resize_callback_func = lambda: None
+        self.background_function = lambda: None
 
     # def window_resize_callback(self, screen_size, func):
     #     if self.window_size[0] != screen_size[0]:
@@ -108,6 +109,8 @@ class Window:
 
             for widget in self.current_menu_list:
                 widget.draw(self.screen, self.mouse_pos, self.mouse_button, self.keys, self.delta_time, event_list)
+
+            self.background_function()
 
             # fps management
             self.fps.fps()
